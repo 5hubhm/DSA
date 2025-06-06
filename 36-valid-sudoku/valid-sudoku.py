@@ -1,22 +1,33 @@
 class Solution:
     def isValidSudoku(self, board: List[List[str]]) -> bool:
-        rows = [[0] * 9 for _ in range(9)]
-        cols = [[0] * 9 for _ in range(9)]
-        boxes = [[0] * 9 for _ in range(9)]
+        rows = {}
+        cols = {}
+        boxes = {}
 
         for r in range(9):
             for c in range(9):
-                if board[r][c] != '.':
-                    num = int(board[r][c]) - 1  # convert '1'-'9' to 0–8
-                    box_index = (r // 3) * 3 + (c // 3)
-
-                    # If the digit is already seen in this row, column, or box → invalid
-                    if rows[r][num] or cols[c][num] or boxes[box_index][num]:
-                        return False
-
-                    # Mark the digit as seen
-                    rows[r][num] = 1
-                    cols[c][num] = 1
-                    boxes[box_index][num] = 1
+                val = board[r][c]
+                if val == '.':
+                    continue
+                
+                # Prepare keys for dicts
+                box_index = (r // 3, c // 3)
+                
+                # Initialize sets if not present
+                if r not in rows:
+                    rows[r] = set()
+                if c not in cols:
+                    cols[c] = set()
+                if box_index not in boxes:
+                    boxes[box_index] = set()
+                
+                # Check if value already seen in row, col or box
+                if (val in rows[r]) or (val in cols[c]) or (val in boxes[box_index]):
+                    return False
+                
+                # Mark value as seen
+                rows[r].add(val)
+                cols[c].add(val)
+                boxes[box_index].add(val)
 
         return True
