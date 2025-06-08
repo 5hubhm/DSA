@@ -1,48 +1,44 @@
-from typing import List
-
 class Solution:
     def solveSudoku(self, board: List[List[str]]) -> None:
-        self.rows = [0] * 9
-        self.cols = [0] * 9
-        self.boxes = [0] * 9
-        self.empty = []
+        rows = [set() for _ in range(9)]
+        cols = [set() for _ in range(9)]
+        boxes = [set() for _ in range(9)]
 
+        # Initialize sets based on the initial board state
         for r in range(9):
             for c in range(9):
-                if board[r][c] == '.':
-                    self.empty.append((r, c))
-                else:
-                    d = int(board[r][c])
-                    mask = 1 << d
-                    self.rows[r] |= mask
-                    self.cols[c] |= mask
-                    self.boxes[(r // 3) * 3 + c // 3] |= mask
+                val = board[r][c]
+                if val != '.':
+                    rows[r].add(val)
+                    cols[c].add(val)
+                    box_index = (r // 3) * 3 + (c // 3)
+                    boxes[box_index].add(val)
 
-        self.backtrack(0, board)
+        def solve(row, col):
+            if row == 9:
+                return True
+            if col == 9:
+                return solve(row + 1, 0)
+            if board[row][col] != '.':
+                return solve(row, col + 1)
 
-    def backtrack(self, idx: int, board: List[List[str]]) -> bool:
-        if idx == len(self.empty):
-            return True
+            box_index = (row // 3) * 3 + (col // 3)
+            for val in map(str, range(1, 10)):
+                if val not in rows[row] and val not in cols[col] and val not in boxes[box_index]:
+                    board[row][col] = val
+                    rows[row].add(val)
+                    cols[col].add(val)
+                    boxes[box_index].add(val)
 
-        r, c = self.empty[idx]
-        box = (r // 3) * 3 + c // 3
+                    if solve(row, col + 1):
+                        return True
 
-        for d in range(1, 10):
-            mask = 1 << d
-            if not (self.rows[r] & mask or self.cols[c] & mask or self.boxes[box] & mask):
-                # Place digit
-                board[r][c] = str(d)
-                self.rows[r] |= mask
-                self.cols[c] |= mask
-                self.boxes[box] |= mask
+                    # backtrack
+                    board[row][col] = '.'
+                    rows[row].remove(val)
+                    cols[col].remove(val)
+                    boxes[box_index].remove(val)
 
-                if self.backtrack(idx + 1, board):
-                    return True
+            return False
 
-                # Backtrack
-                board[r][c] = '.'
-                self.rows[r] ^= mask
-                self.cols[c] ^= mask
-                self.boxes[box] ^= mask
-
-        return False
+        solve(0, 0)
