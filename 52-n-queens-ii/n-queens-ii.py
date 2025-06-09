@@ -25,7 +25,7 @@ class Solution:
 
     def solve(self, col, board, ans, n):
         if col == n:
-            ans.append(board)
+            ans.append([''.join(row) for row in board])
             return
         
         for row in range(n):
