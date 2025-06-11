@@ -7,7 +7,7 @@ class Solution:
         def backtrack():
             if len(per) == n:
                 ans.append(per[:])
-                return
+
             
             for num in nums:
                 if num not in per:
