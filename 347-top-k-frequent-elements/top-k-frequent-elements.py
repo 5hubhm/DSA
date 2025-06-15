@@ -2,9 +2,10 @@ from collections import Counter
 
 class Solution:
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:
-        h_map = {}
-        for n in nums:
-            h_map[n] = h_map.get(n,0)+1
+        h_map = Counter(nums)
+        # for n in nums:
+        #     h_map[n] = h_map.get(n,0)+1
+
         print(h_map)  
 
         sorted_h_map = dict(sorted(h_map.items(), key=lambda x: x[1], reverse=True))
