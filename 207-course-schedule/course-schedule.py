@@ -1,37 +1,28 @@
+from collections import defaultdict
+from typing import List, Optional
+
 class Solution:
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
         g = defaultdict(list)
-        courses = prerequisites
-        for i, j in courses:
+        for i, j in prerequisites:
             g[i].append(j)
 
-        print(g)
-        UNVISITED = 0
-        VISITING = 1
-        VISITED = 2
+        state: List[Optional[bool]] = [None] * numCourses  # None = unvisited
 
-        states = [UNVISITED] * numCourses
-
-        def dfs(node):
-            state = states[node]
-            if state == VISITED:
+        def dfs(node: int) -> bool:
+            if state[node] == True:   # already processed
                 return True
-            elif state == VISITING:
+            if state[node] == False:  # cycle detected
                 return False
 
-            states[node] = VISITING
-
+            state[node] = False  # mark as visiting
             for nei in g[node]:
                 if not dfs(nei):
                     return False
-            
-            states[node] = VISITED
-
+            state[node] = True   # mark as visited
             return True
 
-        for i in  range(numCourses):
+        for i in range(numCourses):
             if not dfs(i):
                 return False
-        
         return True
-        
